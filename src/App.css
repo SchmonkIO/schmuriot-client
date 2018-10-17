@@ -1,32 +1,174 @@
-.App {
-  text-align: center;
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300ita‌​lic,400italic,500,500italic,700,700italic,900italic,900);
+
+html, html * {
+  font-family: 'Roboto', sans-serif;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0px;
+  overflow: hidden;
+  border: 0 !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.login-view,
+.roomlist-view,
+.play-view {
+  display: flex;           /* establish flex container */
+  flex-direction: column;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center;     /* center items horizontally, in this case */
+  height: 100%;
+  background-color: #f5f7fb;
+}
+
+.login-box,
+.roomlist-box {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 24px;
+  background-color: white;
+  min-width: 240px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  
+}
+
+.login-button {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-top: 8px;
+  width: 100%;
+  height: 42px;
+  background-color: #2BB1BD;
+  border: 1px solid #2BB1BD;
   color: white;
+  font-size: 16px;
+  border: 0;
+  cursor: pointer;
+}
+.login-button:disabled {
+  background-color: #868e96;
+  cursor: not-allowed;
 }
 
-.App-link {
-  color: #61dafb;
+.login-input {
+  width: calc(100%-2px);
+  height: 32px;
+  /*border: 1px solid #495057;*/
+  border: 0px;
+  border-bottom: 1px solid #495057;
+  font-size: 16px;
+  padding: 4px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.login-logo {
+  height: 120px !important;
+}
+
+.login-sub {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+
+.spin {
+  -webkit-animation: spin 2s infinite linear;
+}
+
+@-webkit-keyframes spin {
+  0%  {-webkit-transform: rotate(0deg);}
+  100% {-webkit-transform: rotate(360deg);}   
+}
+
+.roomlist-entry {
+  display: flex;
+  width: 100%;
+  margin-bottom: 4px;
+  padding:4px;
+  align-items: center;
+}
+
+.roomlist-entry > button {
+  border: 1px solid #495057;
+  background-color: transparent;
+  height: 32px;
+  margin-left: auto;
+}
+
+.roomlist-entry > button:hover {
+  border: 1px solid #495057;
+  background-color: #495057;
+  color: white;
+  height: 32px;
+  margin-left: auto;
+}
+
+.play-box {
+  height: 80%;
+  width: 80%;
+  padding: 24px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.play-scoreboard {
+  border: 1px solid #495057;
+  padding: 8px;
+  width: 240px;
+  position: relative;
+  float: right;
+  top:0;
+  left:0;
+  display: flex;
+  flex-direction: column;
+}
+
+.play-scoreboard > .center {
+  align-self: center;
+}
+
+.play-header {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+}
+
+.play-scene {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.play-scene-col {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-content: space-between;
+}
+
+.play-scene-cell {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  padding: 8px;
+}
+
+.play-scene-cell-box {
+  border: 1px solid #495057;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
