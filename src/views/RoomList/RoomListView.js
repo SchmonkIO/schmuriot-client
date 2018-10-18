@@ -8,13 +8,16 @@ class RoomListView extends Component {
     isLoading: true
   }
 
-  async componentDidMount() {
-    let res = await this.props.gameClient.getRooms();
-    console.log(res);
-    this.setState({
-      isLoading: false,
-      rooms: res.rooms
+  componentDidMount() {
+    this.props.gameClient.registerEventHandlers({
+      getRooms: (rooms) => {
+        this.setState({
+          rooms: rooms
+        })
+      }
     });
+
+    this.props.gameClient.getRooms();
   }
 
   async handleJoinRoom(room) {
@@ -35,8 +38,8 @@ class RoomListView extends Component {
     const {isLoading, rooms} = this.state;
 
     return (
-      <div className="roomlist-view">
-        <div className="roomlist-box">
+      <div className="scene">
+        <div className="box">
           <h2>Shrooms</h2>
           <p>Pick a room to join or create a new one.</p>
           { isLoading ? <span>Loading..</span>: '' }

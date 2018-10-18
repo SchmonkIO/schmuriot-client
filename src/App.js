@@ -1,50 +1,79 @@
 import React, { Component, Fragment } from 'react';
 import './App.css';
 
+import ConnectingView from './views/ConnectingView';
+import DisconnectedView from './views/DisconnectedView';
+
 import LoginView from './views/Login/LoginView';
 import RoomListView from './views/RoomList/RoomListView';
 import LobbyView from './views/Lobby/LobbyView';
 import PlayView from './views/Play/PlayView';
 
 import gameClient from './lib/gameClient';
+const client = new gameClient("wss://schmuriot.fyreek.me/ws")
 
 class App extends Component {
-  state = {
-    clientId: null,
-    joined: false,
-    gameClient: new gameClient("ws://172.20.192.217:8080/ws")
- }
+  constructor() {
+    super();
+    this.state = {
+      view: 'login',
+      isLoading: true,
+      isConnected: false,
+   }
+
+   this.handleSwitchView = this.handleSwitchView.bind(this);
+  }
 
   componentDidMount() {
-    this.state.gameClient.connect();
+    client.registerEventHandlers({
+      onConnect: () => {
+        setTimeout(() => {
+          this.setState({
+            isLoading: false,
+            isConnected: true
+          });
+        }, 1000);
+      },
+      onClose: () => {
+        this.setState({
+          isLoading: false,
+          isConnected: false
+        });
+      }
+      
+    });
+
+    client.connect();
   }
-  handleSetClientId(clientId) {
+
+  handleSwitchView(view) {
     this.setState({
-      clientId: clientId
-    })
-  }
-  handleSetJoined(joined) {
-    console.log("SET JOINED:", joined);
-    this.setState({
-      joined: joined
-    })
+      view: view
+    }); 
   }
 
   render() {
-    const { clientId, joined } = this.state;
-
-    //return <PlayView/>;
-
-    if(!clientId) {
-      return <LoginView gameClient={this.state.gameClient} setClientIdHandler={this.handleSetClientId.bind(this)} />;
+    if(this.state.isLoading) {
+      return <ConnectingView />;
     }
 
-    if(joined) {  
-      return <LobbyView gameClient={this.state.gameClient} setJoinedHandler={this.handleSetJoined.bind(this)}/>
+    if(!this.state.isConnected) {
+      return <DisconnectedView />;
     }
 
-    return <RoomListView gameClient={this.state.gameClient} clientId={this.state.clientId} setJoinedHandler={this.handleSetJoined.bind(this)} />;
-    
+    if(this.state.view === 'login') {
+      return <LoginView gameClient={client} switchViewHandler={this.handleSwitchView} />
+    }
+
+    if(this.state.view === 'roomlist') {
+      return <RoomListView gameClient={client} switchViewHandler={this.handleSwitchView} />;
+    }
+
+    if(this.state.view === 'lobby') {
+      return <LobbyView gameClient={client} switchViewHandler={this.handleSwitchView} />;
+    }
+
+    return <h1>Error</h1>;
   }
 }
 

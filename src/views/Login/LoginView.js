@@ -15,6 +15,14 @@ class LoginView extends Component {
     this.onLoginClick = this.onLoginClick.bind(this);
   }
 
+  componentDidMount() {
+    this.props.gameClient.registerEventHandlers({
+      setUser: () => {
+        this.props.switchViewHandler('roomlist');
+      }
+    });
+  }
+
   onNameChange = e => {
     this.setState({
       name: e.target.value
@@ -23,23 +31,22 @@ class LoginView extends Component {
 
   onLoginClick = async () => {
     this.setState({isLoading: true});
-    let res = await this.props.gameClient.login(this.state.name);
-    this.props.setClientIdHandler(res.playerid);
+    await this.props.gameClient.login(this.state.name);
   }
 
   render() {
     const { name, isLoading } = this.state;
 
     return (
-      <div className="login-view">
-        <div className="login-box">
-          <img className="login-logo" src={logo} alt="schmuriot Logo"/>
-          <span className="login-sub">What's your name?</span>
-          <input className="login-input" placeholder="e.g. SchmuriotWarrior99" value={this.state.name} onChange={this.onNameChange} />
+      <div className="scene">
+        <div className="box">
+          <img className="box-logo" src={logo} alt="schmuriot Logo"/>
+          <span className="box-sub">What's your name?</span>
+          <input className="box-input" placeholder="e.g. SchmuriotWarrior99" value={this.state.name} onChange={this.onNameChange} />
           {
             isLoading
-            ? <button className="login-button" disabled={true}><LoaderIcon className="spin"/></button>
-            : <button className="login-button" onClick={this.onLoginClick} disabled={!this.state.name}>Anmelden</button>
+            ? <button className="box-button" disabled={true}><LoaderIcon className="spin"/></button>
+            : <button className="box-button" onClick={this.onLoginClick} disabled={!this.state.name}>Enter</button>
           }
           </div>
       </div>
