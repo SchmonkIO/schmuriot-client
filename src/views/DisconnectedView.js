@@ -12,7 +12,7 @@ const ConnectingView = (props) => {
 		<div className="scene">
 			<div className="box">
 				<img className="box-logo" src={logo} alt="schmuriot Logo"/>
-				<span className="box-sub">Disconnected from Server</span>
+				<span className="box-sub">disconnected from Server</span>
 				<br/>
 				<ZappOffIcon />
 			</div>

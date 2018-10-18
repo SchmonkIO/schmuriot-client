@@ -32,7 +32,7 @@ class App extends Component {
             isLoading: false,
             isConnected: true
           });
-        }, 1000);
+        }, 800);
       },
       onClose: () => {
         this.setState({

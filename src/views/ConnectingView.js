@@ -8,9 +8,11 @@ const ConnectingView = (props) => {
 		<div className="scene">
 			<div className="box">
 				<img className="box-logo" src={logo} alt="schmuriot Logo"/>
-				<span className="box-sub">Connecting to Server..</span>
-				<br/>
-				<LoaderIcon className="spin"/>
+				<h2>schmuriot</h2>
+				<hr />
+				<div className="box-content">
+					<LoaderIcon className="spin"/>
+				</div>
 			</div>
 		</div>
 	);

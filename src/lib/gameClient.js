@@ -32,8 +32,14 @@ class gameClient {
   }
 
   registerEventHandlers(handlers) {
-    this.registeredEventHandlers = Object.assign({}, handlers, this.registeredEventHandlers);
+    Object.assign(this.registeredEventHandlers, handlers, this.registeredEventHandlers);
   }
+
+  removeEventHandlers(handlers) {
+    handlers.forEach(handler => {
+      delete this.registeredEventHandlers[handler];
+    })
+  };
 
   handleMessage(ev) {    ;
     let data = JSON.parse(ev.data);
@@ -60,33 +66,33 @@ class gameClient {
   }
 
   getRoom() {
-    return this.request({
+    this.connection.send(JSON.stringify({
       action: "getRoom"
-    });
+    }));
   }
 
   joinRoom(id, password) {
-    return this.request({
+    this.connection.send(JSON.stringify({
       action: "joinRoom",
       id: id,
       pass: password || ""
-    });
+    }));
   }
 
   leaveRoom() {
-    return this.request({
+    this.connection.send(JSON.stringify({
       action: "leaveRoom"
-    });
+    }));
   }
 
   createRoom(name) {
-    return this.request({
+    this.connection.send(JSON.stringify({
       action: "createRoom",
       name: name,
       pass: "",
       map: "",
       slots: 4
-    });
+    }));
   }
 
 }

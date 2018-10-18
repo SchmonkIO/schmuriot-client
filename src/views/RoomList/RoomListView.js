@@ -12,6 +12,7 @@ class RoomListView extends Component {
     this.props.gameClient.registerEventHandlers({
       getRooms: (rooms) => {
         this.setState({
+          isLoading: false,
           rooms: rooms
         })
       }
@@ -20,18 +21,21 @@ class RoomListView extends Component {
     this.props.gameClient.getRooms();
   }
 
+  componentWillUnmount() {
+    this.props.gameClient.removeEventHandlers(['getRooms']);
+  }
+
   async handleJoinRoom(room) {
     if(room.protected) {
-      var password = prompt("Enter the room password:");
+      var password = prompt("enter the rooms password:");
     }
     let res = await this.props.gameClient.joinRoom(room.id, password || '');
     this.props.setJoinedHandler(true);
   }
 
   async createRoom() {
-    let name = prompt("Please enter a room name:");
+    let name = prompt("please give your room a name:");
     await this.props.gameClient.createRoom(name);
-    this.props.setJoinedHandler(true);
   }
 
   render() {
@@ -40,15 +44,18 @@ class RoomListView extends Component {
     return (
       <div className="scene">
         <div className="box">
-          <h2>Shrooms</h2>
-          <p>Pick a room to join or create a new one.</p>
-          { isLoading ? <span>Loading..</span>: '' }
-          {
-            Object.keys(rooms).map((roomId, i) =>
-              <RoomListEntry room={rooms[roomId]} joinRoomHandler={() => this.handleJoinRoom(rooms[roomId])} />
-            )
-          }
-          <p>Why so schmurios? <a href="#!" onClick={this.createRoom.bind(this)}>Create a new shroom</a></p>
+          <h2>rooms</h2>
+          <hr />
+          <div className="box-content">   
+            { isLoading ? <span>Loading..</span>: '' }
+            { Object.keys(rooms).length === 0 ? <p>wow, such empty</p> : ''}
+            {
+              Object.keys(rooms).map((roomId, i) =>
+                <RoomListEntry room={rooms[roomId]} joinRoomHandler={() => this.handleJoinRoom(rooms[roomId])} />
+              )
+            }
+            <p>cannot find what you need? <a href="#!" onClick={this.createRoom.bind(this)}>create a new room</a></p>
+          </div>
         </div>
       </div>
     )

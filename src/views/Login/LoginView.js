@@ -29,6 +29,12 @@ class LoginView extends Component {
     });
   }
 
+  onKeyPress = e => {
+    if (e.key === 'Enter') {
+      this.onLoginClick();
+    }
+  }
+
   onLoginClick = async () => {
     this.setState({isLoading: true});
     await this.props.gameClient.login(this.state.name);
@@ -41,13 +47,16 @@ class LoginView extends Component {
       <div className="scene">
         <div className="box">
           <img className="box-logo" src={logo} alt="schmuriot Logo"/>
-          <span className="box-sub">What's your name?</span>
-          <input className="box-input" placeholder="e.g. SchmuriotWarrior99" value={this.state.name} onChange={this.onNameChange} />
-          {
-            isLoading
-            ? <button className="box-button" disabled={true}><LoaderIcon className="spin"/></button>
-            : <button className="box-button" onClick={this.onLoginClick} disabled={!this.state.name}>Enter</button>
-          }
+          <h2>schmuriot</h2>
+          <hr />
+          <div className="box-content">          
+            <input className="box-input" placeholder="please enter your name.." value={this.state.name} onChange={this.onNameChange} onKeyPress={this.onKeyPress}/>
+            {
+              isLoading
+              ? <button className="box-button" disabled={true}><LoaderIcon className="spin"/></button>
+              : <button className="box-button" onClick={this.onLoginClick} disabled={!this.state.name}>enter</button>
+            }
+            </div>
           </div>
       </div>
     )
