@@ -94,14 +94,14 @@ body {
   overflow-x: hidden;
 }
 
-.roomlist-entry > button {
+.outline-button {
   border: 1px solid #495057;
   background-color: transparent;
   height: 32px;
   margin-left: auto;
 }
 
-.roomlist-entry > button:hover {
+.outline-button:hover {
   border: 1px solid #495057;
   background-color: #495057;
   color: white;
@@ -109,7 +109,7 @@ body {
   margin-left: auto;
 }
 
-.roomlist-entry svg {
+svg {
   height: 20px !important;
   width: 20px !important;
   margin-bottom: -4px;

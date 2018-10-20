@@ -22,6 +22,9 @@ class LoginView extends Component {
       }
     });
   }
+  componentWillUnmount() {
+    this.props.gameClient.removeEventHandlers(['setUser']);
+  }
 
   onNameChange = e => {
     this.setState({
@@ -48,7 +51,6 @@ class LoginView extends Component {
         <div className="box">
           <img className="box-logo" src={logo} alt="schmuriot Logo"/>
           <h2>schmuriot</h2>
-          <hr />
           <div className="box-content">          
             <input className="box-input" placeholder="please enter your name.." value={this.state.name} onChange={this.onNameChange} onKeyPress={this.onKeyPress}/>
             {

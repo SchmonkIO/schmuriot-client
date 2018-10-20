@@ -10,7 +10,7 @@ import LobbyView from './views/Lobby/LobbyView';
 import PlayView from './views/Play/PlayView';
 
 import gameClient from './lib/gameClient';
-const client = new gameClient("wss://schmuriot.fyreek.me/ws")
+const client = new gameClient("ws://172.20.192.217:8080/ws"/*wss://schmuriot.fyreek.me/ws"*/)
 
 class App extends Component {
   constructor() {
@@ -73,7 +73,9 @@ class App extends Component {
       return <LobbyView gameClient={client} switchViewHandler={this.handleSwitchView} />;
     }
 
-    return <h1>Error</h1>;
+    
+    return <PlayView />;
+
   }
 }
 

@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import {
+  Star as StarIcon 
+} from 'react-feather';
 
 class LobbyView extends Component {
   state = {
@@ -6,44 +9,54 @@ class LobbyView extends Component {
     isLoading: true
   }
  
-  async componentDidMount() {
-    this.update();
-  }
-  async update() {
-    let res = await this.props.gameClient.getRoom();
-    console.log(res);
-    this.setState({
-      isLoading: false,
-      room: res.room
+  componentDidMount() {
+    this.props.gameClient.registerEventHandlers({
+      getRoom: (data) => {
+        this.setState({
+          isLoading: false,
+          room: data.room
+        })
+      },
+      //createRoom: (data) => {
+      //}
     });
   }
+
   async leaveRoom() {
-    let res = await this.props.gameClient.leaveRoom();
-    this.props.setJoinedHandler(false);
+    this.props.gameClient.leaveRoom();
+    this.props.switchViewHandler('roomlist');
   }
 
   render() {
+    console.log(this.state);
     if(this.state.isLoading) {
       return (
-        <div className="roomlist-view">
-          <div className="roomlist-box">
-            <h2>Loading Lobby..</h2>
+        <div className="scene">
+          <div className="box">
+            <h2>schmuriot</h2>
+            <hr />
+            <div className="box-content">
+              <p>loading room..</p>
+            </div>
           </div>
         </div>
       );
     }
-    const { id, name, players } = this.state.room;
+    const { id, name, players, owner } = this.state.room;
     return (
-      <div className="roomlist-view">
-        <div className="roomlist-box">
-          <h2>Lobby: {name}</h2>
-          <p>There are currectly {Object.keys(players).length} players in this room.</p>
-          {
-            Object.keys(players).map((playerId) => 
-              <p>{players[playerId].name}</p>
-            )
-          }
-          <a href="#!" onClick={this.leaveRoom.bind(this)}>This room sucks! Leave</a>
+      <div className="scene">
+        <div className="box">
+          <h2>lobby: {name}</h2>
+          <hr />
+          <div className="box-content">
+            <p>there are currectly {Object.keys(players).length} players in this room.</p>
+            {
+              Object.keys(players).map((playerId) => 
+                <p>{ playerId === owner ? <StarIcon color="#ffd43b"/>: ''}{players[playerId].name}</p>
+              )
+            }
+            <a href="#!" onClick={this.leaveRoom.bind(this)}>this room sucks! Leave</a>
+          </div>
         </div>
       </div>
     )

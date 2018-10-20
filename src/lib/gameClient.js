@@ -47,7 +47,7 @@ class gameClient {
 
     if(this.registeredEventHandlers[data.action]) {
       if (data.status) {
-        this.registeredEventHandlers[data.action](data.rooms);
+        this.registeredEventHandlers[data.action](data);
       }
     } 
   }
@@ -85,11 +85,11 @@ class gameClient {
     }));
   }
 
-  createRoom(name) {
+  createRoom(name, password) {
     this.connection.send(JSON.stringify({
       action: "createRoom",
       name: name,
-      pass: "",
+      pass: password,
       map: "",
       slots: 4
     }));

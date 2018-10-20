@@ -7,7 +7,7 @@ const RoomListEntry = (props) => {
   return (
     <div className="roomlist-entry">
       <h4> {name} ({Object.keys(players).length}/{slots}) { props.room.protected ? <LockIcon /> : ''}</h4>
-      <button onClick={props.joinRoomHandler} >Join Room</button>
+      <button className="outline-button" onClick={props.joinRoomHandler} >Join Room</button>
     </div>
   );
 }
