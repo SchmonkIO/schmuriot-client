@@ -14,9 +14,8 @@ class RoomListView extends Component {
     }
 
     this.onInputChange = this.onInputChange.bind(this);
-    this.onSubmitCreateRoom = this.onSubmitCreateRoom.bind(this);
+    this.onCreateRoomSubmit = this.onCreateRoomSubmit.bind(this);
   }
-
 
   componentDidMount() {
     this.props.gameClient.registerEventHandlers({
@@ -27,8 +26,6 @@ class RoomListView extends Component {
         })
       }
     });
-
-    //this.props.gameClient.getRooms();
   }
 
   componentWillUnmount() {
@@ -49,12 +46,12 @@ class RoomListView extends Component {
     this.props.switchViewHandler('lobby');
   }
 
-  onSubmitCreateRoom() {
+  onCreateRoomSubmit() {
     if(this.state.roomName) {
       this.props.gameClient.createRoom(this.state.roomName, this.state.roomPassword || '');
       this.props.switchViewHandler('lobby');
     } else {
-      alert("please enter room name");
+      alert("please enter a room name");
     }
   }
 
@@ -72,7 +69,7 @@ class RoomListView extends Component {
                 <p>create a room</p>                
                 <input className="box-input" name="roomName" placeholder="enter room name.." onChange={this.onInputChange} />
                 <input className="box-input" name="roomPassword" placeholder="(optonal) enter password.." onChange={this.onInputChange} />
-                <button className="outline-button" onClick={this.onSubmitCreateRoom} >create</button>
+                <button className="outline-button" onClick={this.onCreateRoomSubmit} >create</button>
                 <p>i have no friends who will join me. <a href="#!" onClick={() => this.setState({isCreatingRoom: false})}>back to roomlist</a></p>
               </div>
             : <div className="box-content">   

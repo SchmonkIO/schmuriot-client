@@ -13,7 +13,8 @@ class PlayView extends Component {
       [
         {
           id: 0,
-          coins: 3
+          coins: 3,
+          canReach: true
         },
         {
           id: 1,
@@ -27,11 +28,12 @@ class PlayView extends Component {
       [
         {
           id: 1,
-          player: "Player #2"
+          player: "-- ME --"
         },
         {
           id: 2,
-          coins: 4
+          coins: 4,
+          canReach: true
         },
         {
           id: 1,
@@ -41,7 +43,8 @@ class PlayView extends Component {
       [
         {
           id: 0,
-          coins: 3
+          coins: 3,
+          canReach: true
         },
         {
           id: 1,
@@ -57,7 +60,7 @@ class PlayView extends Component {
   
   componentDidMount() {
     setInterval(() => {
-      let num = --this.state.countdown;
+      let num = this.state.countdown -1;
       this.setState({
         countdown: num ? num : 16,
         status: num? 0 : 1 
@@ -69,7 +72,7 @@ class PlayView extends Component {
     const { status, fields, countdown } = this.state;
 
     return(
-      <div className="play-view">
+      <div className="scene">
         <div className="play-box">
           <div className="play-header">
             <div>
@@ -93,7 +96,7 @@ class PlayView extends Component {
                 fields.map((rows) => 
                   <div className="play-scene-col">
                     { rows.map((cell) => 
-                      <div className="play-scene-cell">
+                      <div className={"play-scene-cell " + (cell.canReach ? ' play-cell-reachable' : '')}>
                         <div className="play-scene-cell-box">
                           { 
                             cell.coins 

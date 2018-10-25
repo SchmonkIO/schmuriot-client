@@ -7,7 +7,7 @@ class LoginView extends Component {
   constructor() {
     super();
     this.state = {
-      name: null,
+      name: "",
       isLoading: false,
     }
 
@@ -51,6 +51,7 @@ class LoginView extends Component {
         <div className="box">
           <img className="box-logo" src={logo} alt="schmuriot Logo"/>
           <h2>schmuriot</h2>
+          <hr />
           <div className="box-content">          
             <input className="box-input" placeholder="please enter your name.." value={this.state.name} onChange={this.onNameChange} onKeyPress={this.onKeyPress}/>
             {

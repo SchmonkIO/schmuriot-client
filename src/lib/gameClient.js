@@ -95,6 +95,12 @@ class gameClient {
     }));
   }
 
+  toggleReady() {
+    this.connection.send(JSON.stringify({
+      action: "toggleReady"
+    }));
+  }
+
 }
 
 export default gameClient;

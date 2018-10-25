@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 import {
-  Star as StarIcon 
+  Star as StarIcon, 
+  Check as CheckIcon
 } from 'react-feather';
 
 class LobbyView extends Component {
-  state = {
-    room: null,
-    isLoading: true
+  constructor() {
+    super();
+    this.state = {
+      room: null,
+      isLoading: true,
+      isReady: false
+    }
+
+    this.onReadyClick = this.onReadyClick.bind(this);
+    this.onLeaveRoomClick = this.onLeaveRoomClick.bind(this);
+    this.renderReadyPlayersCount = this.renderReadyPlayersCount.bind(this);
   }
- 
+
   componentDidMount() {
     this.props.gameClient.registerEventHandlers({
       getRoom: (data) => {
@@ -16,19 +25,29 @@ class LobbyView extends Component {
           isLoading: false,
           room: data.room
         })
-      },
-      //createRoom: (data) => {
-      //}
+      }
     });
   }
 
-  async leaveRoom() {
+  onLeaveRoomClick() {
     this.props.gameClient.leaveRoom();
     this.props.switchViewHandler('roomlist');
   }
 
+  onReadyClick() {
+    this.props.gameClient.toggleReady();
+    this.setState({
+      isReady: !this.state.isReady
+    })
+  }
+
+  renderReadyPlayersCount() {
+    let players = this.rooms.players || {};
+    console.log(players);
+    return Object.keys(players).filter(playerId => players[playerId].ready).length;
+  }
+
   render() {
-    console.log(this.state);
     if(this.state.isLoading) {
       return (
         <div className="scene">
@@ -51,11 +70,22 @@ class LobbyView extends Component {
           <div className="box-content">
             <p>there are currectly {Object.keys(players).length} players in this room.</p>
             {
-              Object.keys(players).map((playerId) => 
-                <p>{ playerId === owner ? <StarIcon color="#ffd43b"/>: ''}{players[playerId].name}</p>
+              Object.keys(players).map((playerId, i) => 
+                <p key={i} >
+                  { playerId === owner ? <StarIcon color="#ffd43b"/> : '' } 
+                  { players[playerId].name }
+                  { players[playerId].ready ? <CheckIcon /> : '' }
+                </p>
               )
             }
-            <a href="#!" onClick={this.leaveRoom.bind(this)}>this room sucks! Leave</a>
+            {
+              this.state.isReady 
+                ? <button className="outline-button" onClick={this.onReadyClick} >unready</button>
+                : <button className="outline-button" onClick={this.onReadyClick} >ready</button>
+            }
+            <br/>
+            <p>The game will start when all players are ready ({this.renderReadyPlayersCount()} / players.length)</p>
+            <a href="#!" onClick={this.onLeaveRoomClick}>this room sucks! Leave</a>
           </div>
         </div>
       </div>
