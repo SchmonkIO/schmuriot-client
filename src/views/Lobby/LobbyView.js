@@ -42,7 +42,7 @@ class LobbyView extends Component {
   }
 
   renderReadyPlayersCount() {
-    let players = this.rooms.players || {};
+    let players = this.state.room.players || {};
     console.log(players);
     return Object.keys(players).filter(playerId => players[playerId].ready).length;
   }
@@ -84,7 +84,7 @@ class LobbyView extends Component {
                 : <button className="outline-button" onClick={this.onReadyClick} >ready</button>
             }
             <br/>
-            <p>The game will start when all players are ready ({this.renderReadyPlayersCount()} / players.length)</p>
+            <p>The game will start when all players are ready ({this.renderReadyPlayersCount()} / {Object.keys(players).length})</p>
             <a href="#!" onClick={this.onLeaveRoomClick}>this room sucks! Leave</a>
           </div>
         </div>
