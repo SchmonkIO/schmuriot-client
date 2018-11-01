@@ -61,7 +61,8 @@ class LobbyView extends Component {
         </div>
       );
     }
-    const { id, name, players, owner } = this.state.room;
+
+    const { name, players, owner } = this.state.room;
     return (
       <div className="scene">
         <div className="box">

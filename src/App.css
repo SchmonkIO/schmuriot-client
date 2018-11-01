@@ -198,3 +198,14 @@ hr {
   align-items: center;
   justify-content: center;
 }
+
+.alert-error {
+  color: white;
+  background-color: #fa5252;
+  margin: 4px;
+  width: 100%;
+  padding-top: 4px; 
+  padding-bottom: 4px; 
+  display: flex;
+  justify-content: center;
+}

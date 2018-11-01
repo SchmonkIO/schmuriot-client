@@ -4,47 +4,71 @@ import { Loader as LoaderIcon } from 'react-feather';
 import logo from '../../images/logo_transparent.png';
 
 class LoginView extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       name: "",
       isLoading: false,
+      error: null
     }
 
-    this.onNameChange = this.onNameChange.bind(this);
+    this.onChange = this.onChange.bind(this);
     this.onLoginClick = this.onLoginClick.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
+    this.setUserSuccess = this.setUserSuccess.bind(this);
+    this.setUserError = this.setUserError.bind(this);
   }
 
   componentDidMount() {
-    this.props.gameClient.registerEventHandlers({
-      setUser: () => {
-        this.props.switchViewHandler('roomlist');
-      }
-    });
+    this.props.gameClient.subscribe({
+      setUserSuccess: this.setUserSuccess,
+      setUserError: this.setUserError
+    })
   }
+
   componentWillUnmount() {
-    this.props.gameClient.removeEventHandlers(['setUser']);
+    this.props.gameClient.unsubscribe({
+      setUserSuccess: this.setUserSuccess,
+      setUserError: this.setUserError
+    })
   }
 
-  onNameChange = e => {
+  setUserSuccess() {
+    this.props.switchViewHandler('roomlist');
+  }
+
+  setUserError(res) {
+    console.log(res.message);
     this.setState({
-      name: e.target.value
+      isLoading: false,
+      error: res.message
     });
   }
 
-  onKeyPress = e => {
-    if (e.key === 'Enter') {
+  onChange(ev) {
+    this.setState({
+      [ev.target.name]: ev.target.value,
+      error: false
+    });
+  }
+
+  onKeyPress(ev) {
+    if (ev.key === 'Enter') {
       this.onLoginClick();
     }
   }
 
-  onLoginClick = async () => {
-    this.setState({isLoading: true});
-    await this.props.gameClient.login(this.state.name);
+  onLoginClick() {
+    this.setState({ isLoading: true });
+    this.setUser(this.state.name);
+  }
+
+  setUser(name) {    
+    this.props.gameClient.send("setUser",  {name: name});
   }
 
   render() {
-    const { name, isLoading } = this.state;
+    const { name, isLoading, error } = this.state;
 
     return (
       <div className="scene">
@@ -52,15 +76,20 @@ class LoginView extends Component {
           <img className="box-logo" src={logo} alt="schmuriot Logo"/>
           <h2>schmuriot</h2>
           <hr />
-          <div className="box-content">          
-            <input className="box-input" placeholder="please enter your name.." value={this.state.name} onChange={this.onNameChange} onKeyPress={this.onKeyPress}/>
+          <div className="box-content">  
+            {
+              error 
+                ? <div class="alert-error">{error}</div>
+                : ''
+            }
+            <input className="box-input" name="name" placeholder="please enter your name.." value={name} onChange={this.onChange} onKeyPress={this.onKeyPress}/>
             {
               isLoading
               ? <button className="box-button" disabled={true}><LoaderIcon className="spin"/></button>
-              : <button className="box-button" onClick={this.onLoginClick} disabled={!this.state.name}>enter</button>
+              : <button className="box-button" onClick={this.onLoginClick} disabled={!name}>enter</button>
             }
-            </div>
           </div>
+        </div>
       </div>
     )
   }

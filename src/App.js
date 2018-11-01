@@ -5,45 +5,57 @@ import ConnectingView from './views/ConnectingView';
 import DisconnectedView from './views/DisconnectedView';
 
 import LoginView from './views/Login/LoginView';
-import RoomListView from './views/RoomList/RoomListView';
+import RoomListView from './views/Rooms/RoomListView';
+import CreateRoomView from './views/Rooms/CreateRoomView';
 import LobbyView from './views/Lobby/LobbyView';
 import PlayView from './views/Play/PlayView';
 
-import gameClient from './lib/gameClient';
-const client = new gameClient("wss://schmuriot.fyreek.me/ws"/*wss://schmuriot.fyreek.me/ws"*/)
+import GameClient from './lib/gameClient';
+const gameClient = new GameClient()
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
+      serverUrl: "wss://schmuriot.fyreek.me/ws",
       view: 'login',
       isLoading: true,
       isConnected: false,
    }
 
    this.handleSwitchView = this.handleSwitchView.bind(this);
+   this.connectionOpen = this.connectionOpen.bind(this);
+   this.connectionClose = this.connectionClose.bind(this);
   }
 
   componentDidMount() {
-    client.registerEventHandlers({
-      onConnect: () => {
-        setTimeout(() => {
-          this.setState({
-            isLoading: false,
-            isConnected: true
-          });
-        }, 800);
-      },
-      onClose: () => {
-        this.setState({
-          isLoading: false,
-          isConnected: false
-        });
-      }
-      
-    });
+    gameClient.subscribe({
+      connectionOpen: this.connectionOpen,
+      connectionClose: this.connectionClose
+    })
 
-    client.connect();
+    gameClient.connect(this.state.serverUrl);
+  }
+
+  componentWillUnmount() {
+    gameClient.unsubscribe({
+      connectionOpen: this.connectionOpen,
+      connectionClose: this.connectionClose
+    })
+  }
+
+  connectionOpen() {
+    this.setState({
+      isLoading: false,
+      isConnected: true
+    });
+  }
+
+  connectionClose() {
+    this.setState({
+      isLoading: false,
+      isConnected: false,
+    })
   }
 
   handleSwitchView(view) {
@@ -52,30 +64,35 @@ class App extends Component {
     }); 
   }
 
+
   render() {
-    
-    if(this.state.isLoading) {
+    const { isLoading, isConnected, view } = this.state;
+
+    if(isLoading) {
       return <ConnectingView />;
     }
 
-    if(!this.state.isConnected) {
+    if(!isConnected) {
       return <DisconnectedView />;
     }
 
-    if(this.state.view === 'login') {
-      return <LoginView gameClient={client} switchViewHandler={this.handleSwitchView} />
+    if(view === 'login') {
+      return <LoginView gameClient={gameClient} switchViewHandler={this.handleSwitchView} />
     }
 
-    if(this.state.view === 'roomlist') {
-      return <RoomListView gameClient={client} switchViewHandler={this.handleSwitchView} />;
+    if(view === 'roomlist') {
+      return <RoomListView gameClient={gameClient} switchViewHandler={this.handleSwitchView} />;
     }
 
-    if(this.state.view === 'lobby') {
-      return <LobbyView gameClient={client} switchViewHandler={this.handleSwitchView} />;
+    if(view === 'createroom') {
+      return <CreateRoomView gameClient={gameClient} switchViewHandler={this.handleSwitchView} />;
+    }
+
+    if(view === 'lobby') {
+      return <LobbyView gameClient={gameClient} switchViewHandler={this.handleSwitchView} />;
     }
     
     return <PlayView />;    
-
   }
 }
 
