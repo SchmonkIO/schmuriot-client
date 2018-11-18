@@ -84,7 +84,8 @@ class RoomListView extends Component {
                 ? <div class="alert-error">{error}</div>
                 : ''
             }
-            { isLoading 
+            { 
+              isLoading 
               ? <LoaderIcon className="spin"/>
               : Object.keys(rooms).length === 0 
                 ? <div className="center-content">
