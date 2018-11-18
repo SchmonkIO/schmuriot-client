@@ -21,17 +21,24 @@ class App extends Component {
       view: 'login',
       isLoading: true,
       isConnected: false,
+      playerName: null,
+      playerId: null,
+      players: {}
    }
 
    this.handleSwitchView = this.handleSwitchView.bind(this);
    this.connectionOpen = this.connectionOpen.bind(this);
    this.connectionClose = this.connectionClose.bind(this);
+   this.setUserSuccess = this.setUserSuccess.bind(this);
+   this.getRoomSuccess = this.getRoomSuccess.bind(this);
   }
 
   componentDidMount() {
     gameClient.subscribe({
       connectionOpen: this.connectionOpen,
-      connectionClose: this.connectionClose
+      connectionClose: this.connectionClose,
+      setUserSuccess: this.setUserSuccess,
+      getRoomSuccess: this.getRoomSuccess
     })
 
     gameClient.connect(this.state.serverUrl);
@@ -40,7 +47,9 @@ class App extends Component {
   componentWillUnmount() {
     gameClient.unsubscribe({
       connectionOpen: this.connectionOpen,
-      connectionClose: this.connectionClose
+      connectionClose: this.connectionClose,
+      setUserSuccess: this.setUserSuccess,
+      getRoomSuccess: this.getRoomSuccess
     })
   }
 
@@ -65,8 +74,22 @@ class App extends Component {
   }
 
 
+  setUserSuccess(res) {
+    this.setState({
+      playerId: res.playerid,
+      playerName: res.playername
+    });
+  }
+
+  getRoomSuccess(res) {
+    this.setState({
+      players: res.room.players
+    })
+  }
+
+
   render() {
-    const { isLoading, isConnected, view } = this.state;
+    const { isLoading, isConnected, view, playerId, playerName, players } = this.state;
 
     if(isLoading) {
       return <ConnectingView />;
@@ -92,7 +115,7 @@ class App extends Component {
       return <LobbyView gameClient={gameClient} switchViewHandler={this.handleSwitchView} />;
     }
     
-    return <PlayView />;    
+    return <PlayView gameClient={gameClient} switchViewHandler={this.handleSwitchView} lobbyInfo={{playerName, playerId, players}} />;    
   }
 }
 

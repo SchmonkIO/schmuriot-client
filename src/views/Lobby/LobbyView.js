@@ -13,37 +13,60 @@ class LobbyView extends Component {
       isReady: false
     }
 
-    this.onReadyClick = this.onReadyClick.bind(this);
+    this.getRoomSuccess = this.getRoomSuccess.bind(this);
+    this.leaveRoomSuccess = this.leaveRoomSuccess.bind(this);
     this.onLeaveRoomClick = this.onLeaveRoomClick.bind(this);
-    this.renderReadyPlayersCount = this.renderReadyPlayersCount.bind(this);
+    this.startRoundSuccess = this.startRoundSuccess.bind(this);
+    this.onReadyClick = this.onReadyClick.bind(this);
   }
 
   componentDidMount() {
-    this.props.gameClient.registerEventHandlers({
-      getRoom: (data) => {
-        this.setState({
-          isLoading: false,
-          room: data.room
-        })
-      }
+    this.props.gameClient.subscribe({
+      getRoomSuccess: this.getRoomSuccess,
+      leaveRoomSuccess: this.leaveRoomSuccess,
+      startRoundSuccess: this.startRoundSuccess,
     });
   }
 
+  componentWillUnmount() {
+    this.props.gameClient.unsubscribe({
+      getRoomSuccess: this.getRoomSuccess,
+      leaveRoomSuccess: this.leaveRoomSuccess,
+      startRoundSuccess: this.startRoundSuccess
+    });
+  }
+
+  getRoomSuccess(res) {
+    this.setState({
+      isLoading: false,
+      room: res.room
+    });
+    if(this.getReadyPlayersCount() === this.state.room.slots) {
+      this.props.switchViewHandler('play');
+    }
+  }
+
   onLeaveRoomClick() {
-    this.props.gameClient.leaveRoom();
+    this.props.gameClient.send("leaveRoom", {});
+  }
+
+  leaveRoomSuccess() {
     this.props.switchViewHandler('roomlist');
   }
 
-  onReadyClick() {
-    this.props.gameClient.toggleReady();
-    this.setState({
-      isReady: !this.state.isReady
-    })
+  startRoundSuccess() {
+    console.log("this was handled to late..shame");
   }
 
-  renderReadyPlayersCount() {
+  onReadyClick() {
+    this.setState({
+      isReady: !this.state.isReady
+    });
+    this.props.gameClient.send("toggleReady", {});
+  }
+
+  getReadyPlayersCount() {
     let players = this.state.room.players || {};
-    console.log(players);
     return Object.keys(players).filter(playerId => players[playerId].ready).length;
   }
 
@@ -52,7 +75,7 @@ class LobbyView extends Component {
       return (
         <div className="scene">
           <div className="box">
-            <h2>schmuriot</h2>
+            <h2>lobby</h2>
             <hr />
             <div className="box-content">
               <p>loading room..</p>
@@ -62,14 +85,18 @@ class LobbyView extends Component {
       );
     }
 
-    const { name, players, owner } = this.state.room;
+    const { name, players, owner, slots } = this.state.room;
     return (
       <div className="scene">
         <div className="box">
           <h2>lobby: {name}</h2>
           <hr />
           <div className="box-content">
-            <p>there are currectly {Object.keys(players).length} players in this room.</p>
+            {
+              Object.keys(players).length > 1
+              ? <p>there are currectly {Object.keys(players).length} players in this room</p>
+              : <p>you're currently alone in this room</p>
+            }
             {
               Object.keys(players).map((playerId, i) => 
                 <p key={i} >
@@ -85,8 +112,12 @@ class LobbyView extends Component {
                 : <button className="outline-button" onClick={this.onReadyClick} >ready</button>
             }
             <br/>
-            <p>The game will start when all players are ready ({this.renderReadyPlayersCount()} / {Object.keys(players).length})</p>
-            <a href="#!" onClick={this.onLeaveRoomClick}>this room sucks! Leave</a>
+            {
+              this.getReadyPlayersCount() !== slots
+              ? <p>the game will start once enough players are ready ({this.getReadyPlayersCount()} / {slots})</p>
+              : <p>the game will start now!!</p>
+            }
+            <a href="#!" onClick={this.onLeaveRoomClick}>i don't like this place! leave</a>
           </div>
         </div>
       </div>

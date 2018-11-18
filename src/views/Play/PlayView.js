@@ -2,89 +2,91 @@ import React, { Component, Fragment } from 'react';
 
 import {
   Star as StarIcon,
-  User as UserIcon
+  User as UserIcon,
+  Loader as LoaderIcon
 } from 'react-feather';
 
 class PlayView extends Component {
-  state = {
-    status: 0,
-    countdown: 15,
-    fields: [
-      [
-        {
-          id: 0,
-          coins: 3,
-          canReach: true
-        },
-        {
-          id: 1,
-          player: "Player #1"
-        },
-        {
-          id: 2,
-          coins: 4
-        } 
-      ], 
-      [
-        {
-          id: 1,
-          player: "-- ME --"
-        },
-        {
-          id: 2,
-          coins: 4,
-          canReach: true
-        },
-        {
-          id: 1,
-          player: "Player #3"
-        },
-      ], 
-      [
-        {
-          id: 0,
-          coins: 3,
-          canReach: true
-        },
-        {
-          id: 1,
-          player: "Player #4"
-        },
-        {
-          id: 2,
-          coins: 4
-        } 
-      ], 
-    ]
+  constructor(props) {
+    super(props);
+    this.state = {
+      playerId: this.props.lobbyInfo.playerId,
+      playerName: this.props.lobbyInfo.playerName,
+      players: this.props.lobbyInfo.players,
+      status: 0,
+      countdown: 15,
+      game: {}
+    }
+
+    this.countdownInterval = null;
+    this.startRoundSuccess = this.startRoundSuccess.bind(this);
+    this.startCountdown = this.startCountdown.bind(this);
   }
+
   
   componentDidMount() {
-    setInterval(() => {
-      let num = this.state.countdown -1;
+    this.props.gameClient.subscribe({
+      startRoundSuccess: this.startRoundSuccess
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.gameClient.unsubscribe({
+      startRoundSuccess: this.startRoundSuccess
+    });
+  }
+
+  startRoundSuccess(res) {
+    console.log(res);
+    this.setState({
+      game: res.game
+    });
+
+    if(this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+    this.startCountdown(res.game.countdown);
+  }
+  
+  startCountdown(from) {
+    this.setState({
+      countdown: from
+    })
+
+    this.countdownInterval = setInterval(() => {
       this.setState({
-        countdown: num ? num : 16,
-        status: num? 0 : 1 
-      })
+        countdown: this.state.countdown -1
+      });
     }, 1000)
   }
 
+
   render() {
-    const { status, fields, countdown } = this.state;
+    const { countdown, playerId, players } = this.state;
+    const { currentRound, rounds, fields } = this.state.game;
+
+    if(!fields) {
+      return (
+        <div className="scene">
+          <LoaderIcon className="spin"/>
+        </div>
+      );
+    }
 
     return(
       <div className="scene">
         <div className="play-box">
           <div className="play-header">
             <div>
-              <h2>Runde #1</h2>
+              <h2>round {currentRound}/{rounds}</h2>
               {
-                status === 0 
-                ? <p>Zug wählen.. {countdown}</p>
-                : <p>Du hast verloren</p>
+                countdown > 0 
+                ? <p>choose your move wisely.. {countdown}</p>
+                : <p>you loose</p>
               }
             </div>
             <div className="play-scoreboard">          
-              <b className="centered">Scoreboard:</b>
+              <b className="centered">scores</b>
               <span>1) Player #2: 20 Münzen</span>
               <span>2) Player #1: 12 Münzen</span>
               <span>3) Player #3: 5 Münzen</span>
@@ -96,14 +98,14 @@ class PlayView extends Component {
                 fields.map((rows) => 
                   <div className="play-scene-col">
                     { rows.map((cell) => 
-                      <div className={"play-scene-cell " + (cell.canReach ? ' play-cell-reachable' : '')}>
+                      <div className={"play-scene-cell " + (cell.player === playerId ? ' play-cell-reachable' : '')}>
                         <div className="play-scene-cell-box">
                           { 
                             cell.coins 
                             ? new Array(cell.coins).fill("_").map((_, i) => 
                                 <StarIcon />
                               )          
-                            : <span><UserIcon />{ cell.player }</span>                
+                            : <span><UserIcon />{ players[cell.player].name }</span>                
                           }
                         </div>
                       </div>

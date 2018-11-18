@@ -40,7 +40,7 @@ class GameClient {
   }
 
   send(action, opts) {
-    console.log("send::", opts);
+    console.log("send::",action, opts);
     let data = Object.assign({}, {action}, opts);
     this.connection.send(JSON.stringify(data));
   }

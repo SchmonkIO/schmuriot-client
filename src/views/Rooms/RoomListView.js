@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Loader as LoaderIcon } from 'react-feather';
 import RoomListEntry from './RoomListEntry';
+import doggo from './../../images/doggo.png';
+
 
 class RoomListView extends Component {
   constructor() {
@@ -14,6 +16,7 @@ class RoomListView extends Component {
     this.getRoomsSuccess = this.getRoomsSuccess.bind(this);
     this.joinRoomSuccess = this.joinRoomSuccess.bind(this);
     this.joinRoomError = this.joinRoomError.bind(this);
+    this.createRoomClick = this.createRoomClick.bind(this);
   }
 
   componentDidMount() {
@@ -25,7 +28,7 @@ class RoomListView extends Component {
   }
 
   componentWillUnmount() {
-    this.props.gameClient.subscribe({
+    this.props.gameClient.unsubscribe({
       getRoomsSuccess: this.getRoomsSuccess,
       joinRoomSuccess: this.joinRoomSuccess,
       joinRoomError: this.joinRoomError
@@ -84,7 +87,10 @@ class RoomListView extends Component {
             { isLoading 
               ? <LoaderIcon className="spin"/>
               : Object.keys(rooms).length === 0 
-                ? <p>wow, such empty</p>
+                ? <div className="center-content">
+                    <img src={doggo} alt="doggo" height="64px" width="64px"/>
+                    <p>wow, such empty</p>
+                  </div>
                 : <p>we found {Object.keys(rooms).length} rooms</p>             
             }
             {
